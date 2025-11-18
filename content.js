@@ -192,6 +192,7 @@ let activeBox = 'g';    // 'g' or 's'
 let mediaStream = null;
 let garmentBlob = null;
 let selfieBlob = null;
+let dragJustHappened = false;
 
 //////////////////// Helpers ////////////////////
 function setActive(which) {
@@ -308,6 +309,9 @@ const panel = shadow.getElementById('vton-panel');
 
 // open/close
 shadow.getElementById('vton-tab').addEventListener('click', () => {
+  // If this click came right after a drag, ignore it
+  if (dragJustHappened) return;
+
   panel.classList.toggle('open');
   if (!panel.classList.contains('open')) stopCamera();
 });
@@ -318,28 +322,44 @@ shadow.getElementById('close').addEventListener('click', () => {
 
 // vertical-only drag for tab and header (host stays pinned to RIGHT)
 function enableVerticalDrag(el) {
-  let startY = 0, startTop = 0, dragging = false;
+  let startY = 0, startTop = 0, dragging = false, moved = false;
 
   const down = (e) => {
     dragging = true;
+    moved = false;
     startY = e.clientY;
     startTop = host.getBoundingClientRect().top + window.scrollY;
     e.preventDefault();
   };
+
   const move = (e) => {
     if (!dragging) return;
     const dy = e.clientY - startY;
+
+    // Treat it as a drag only if there is a noticeable movement
+    if (Math.abs(dy) > 2) moved = true;
+
     const newTop = Math.max(0, startTop + dy);
     host.style.top = newTop + 'px';
     host.style.right = '0px';     // keep docked right
     host.style.left = 'auto';
   };
-  const up = () => { dragging = false; };
+
+  const up = () => {
+    if (dragging && moved) {
+      // Mark that a drag just occurred so we can ignore the click
+      dragJustHappened = true;
+      // Reset after the click event lifecycle finishes
+      setTimeout(() => { dragJustHappened = false; }, 0);
+    }
+    dragging = false;
+  };
 
   el.addEventListener('mousedown', down);
   window.addEventListener('mousemove', move);
   window.addEventListener('mouseup', up);
 }
+
 enableVerticalDrag(shadow.getElementById('vton-tab'));
 enableVerticalDrag(shadow.getElementById('vton-header'));
 

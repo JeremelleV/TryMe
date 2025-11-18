@@ -1,10 +1,5 @@
 # TryMe — Virtual Try-On Chrome Extension
 
-A browser-based virtual try-on tool that lets users overlay garment images onto a selfie directly while shopping online.  
-The extension communicates with a lightweight Node/Express backend, which forwards images to the **IDM-VTON** Hugging Face Space for AI-powered try-on generation.
-
-<br>
-
 ![Chrome Extension](https://img.shields.io/badge/Platform-Chrome_Extension-4285F4?logo=google-chrome&logoColor=white)
 ![JavaScript](https://img.shields.io/badge/Language-JavaScript-F7DF1E?logo=javascript&logoColor=black)
 ![HTML/CSS](https://img.shields.io/badge/UI-HTML%20%2F%20CSS-E34F26?logo=html5&logoColor=white)
@@ -15,7 +10,10 @@ The extension communicates with a lightweight Node/Express backend, which forwar
 ![IDM-VTON](https://img.shields.io/badge/AI_Model-IDM--VTON-FF6F61?logo=huggingface&logoColor=white)
 ![HuggingFace](https://img.shields.io/badge/API-HuggingFace_Space-FFD21E?logo=huggingface&logoColor=black)
 
-<br>
+---
+
+A browser-based virtual try-on tool that lets users overlay garment images onto a selfie directly while shopping online.  
+The extension communicates with a lightweight Node/Express backend, which forwards images to the **IDM-VTON** Hugging Face Space for AI-powered try-on generation.
 
 ---
 
@@ -24,16 +22,17 @@ The extension communicates with a lightweight Node/Express backend, which forwar
 TryMe was originally inspired by my team's **NatHacks 2025** hackathon project.  
 The goal was to create a lightweight, virtual try-on tool to reduce clothing waste while shopping online.
 
-Check out the original project on Devpost:
-_Hackathon project link_: **[Devpost Page Here](https://devpost.com/software/emergrade)**  
+Check out the original project:
 
-<br>
+Live website: **[Emergrade on Render](https://emergrade-a0wx.onrender.com)** 
+
+Devpost: **[Devpost Page Here](https://devpost.com/software/emergrade)**
 
 ---
 
 ## Model Credit — yisol/IDM-VTON
 
-All virtual try-on results are generated using the excellent open-source model:
+All virtual try-on results are generated using the excellent open-source model licensed under the Creative Commons Attribution-NonCommercial-ShareAlike 4.0 License:
 
 ### **IDM-VTON on Hugging Face**  
 🔗 https://huggingface.co/spaces/yisol/IDM-VTON  
@@ -45,8 +44,6 @@ This extension does **not** modify or distribute model weights.
 All inference calls go directly through the publicly available **Hugging Face Space API** using the `@gradio/client` library.
 
 If you use or extend this project, please credit **yisol et al.** for their work.
-
-<br>
 
 ---
 
@@ -70,9 +67,3 @@ This means:
 - During cold starts, the extension may temporarily fall back to the mock image
 
 Once warm, results are generally fast.
-
-<br>
-
----
-
-

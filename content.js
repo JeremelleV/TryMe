@@ -113,6 +113,27 @@ style.textContent = `
   button.secondary { background: #083892ff; color: #fff; }
   button.tertiary { background: #38b6ff; color: #fff; }
 
+  .try-btn {
+    padding: 0 !important;
+    background: #38b6ff;
+    border: none;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .try-btn img {
+    width: 100%;
+    height: auto;
+    max-height: 30px; 
+    object-fit: contain;
+    display: block;
+  }
+  .try-btn.disabled-processing {
+    opacity: 0.5;
+    pointer-events: none;
+  }
+
   .footer { display:flex; gap:8px; }
 
   .result {
@@ -168,7 +189,9 @@ ui.innerHTML = `
         </div>
 
         <div class="footer">
-          <button id="try" style="flex:1">Try Me</button>
+          <button id="try" class="try-btn" style="flex:1; padding:0;">
+            <img id="try-img" alt="Try Me" />
+          </button>
           <button id="clear" class="secondary"><strong>Clear</strong></button>
         </div>
 
@@ -192,6 +215,11 @@ shadow.appendChild(ui);
 const tabIconEl = shadow.getElementById('tab-icon');
 if (tabIconEl) {
   tabIconEl.src = chrome.runtime.getURL('assets/tab-icon.png');
+}
+
+const tryImg = shadow.getElementById('try-img');
+if (tryImg) {
+  tryImg.src = chrome.runtime.getURL('assets/header-logo.png');
 }
 
 //////////////////// State ////////////////////
@@ -464,8 +492,11 @@ shadow.getElementById('try').addEventListener('click', async () => {
   }
 
   const btn = shadow.getElementById('try');
-  const oldTxt = btn.textContent;
-  btn.textContent = 'Processing…';
+  
+  //const oldTxt = btn.textContent;
+  //btn.textContent = 'Processing…';
+  btn.classList.add('disabled-processing');
+
   btn.disabled = true;
   setStatus('Sending images to IDM-VTON… this can take a little while.');
 
@@ -511,7 +542,10 @@ shadow.getElementById('try').addEventListener('click', async () => {
     panel.classList.add('has-result');
     setStatus('Showing mock result due to an error from the backend.');
   } finally {
-    btn.textContent = oldTxt;
+
+    //btn.textContent = oldTxt;
+    btn.classList.remove('disabled-processing');
+    
     btn.disabled = false;
   }
 });

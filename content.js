@@ -39,9 +39,9 @@ style.textContent = `
   }
   
   .panel {
-    width: 360px;
-    background: #fff; color: #111;
-    border: 1px solid #ddd; border-right: none;       /* open to page on the left */
+    width: 400px;
+    background: #fffcecff; color: #111;
+    border: 3px solid #083892ff; border-right: none;       /* open to page on the left */
     border-radius: 8px 0 0 8px;
     box-shadow: 0 6px 24px rgba(0,0,0,.18);
     font: 400 13px system-ui;
@@ -57,7 +57,7 @@ style.textContent = `
   }
 
   .body {
-    padding: 12px;
+    padding: 20px;
     display: flex;
     gap: 12px;
   }
@@ -83,15 +83,15 @@ style.textContent = `
   .pasteBox {
     position: relative;
     border: 2px dashed #558bc9ff; border-radius: 10px;
-    padding: 12px; min-height: 120px;
+    padding: 12px; min-height: 190px;
     display:flex; align-items:center; justify-content:center;
-    text-align:center; color:#555; background:#fafafa;
+    text-align:center; color: #0c3b61ff; background: #fffdfaff;
     transition: border-color .15s, background .15s, box-shadow .15s;
     outline: none;
   }
   .pasteBox.active {
-    border-color:#111; background:#fff;
-    box-shadow: 0 0 0 3px rgba(0, 60, 170, 0.22) inset;
+    border-color: #0772b1ff; background: #fff;
+    box-shadow: 0 0 0 3px rgba(0, 164, 240, 0.37) inset;
   }
   .pastePrompt { pointer-events:none; }
   .pastePrompt small { color:#777; display:block; margin-top: 2px; }
@@ -109,8 +109,9 @@ style.textContent = `
   }
 
   .controls { display:flex; gap:8px; margin-top:8px; flex-wrap: wrap; }
-  button { padding:6px 10px; border-radius:8px; border:1px solid #ccc; background:#111; color:#fff; cursor:pointer; }
-  button.secondary { background:#fff; color:#111; }
+  button { padding:10px 14px; border-radius:8px; border:1px solid #ccc; background: #23769cff; color: #fff; cursor:pointer; }
+  button.secondary { background: #083892ff; color: #fff; }
+  button.tertiary { background: #38b6ff; color: #fff; }
 
   .footer { display:flex; gap:8px; }
 
@@ -146,8 +147,8 @@ ui.innerHTML = `
           </div>
           <div class="controls">
             <input id="g-file" type="file" accept="image/*" style="display:none">
-            <button id="g-upload" class="secondary">Upload Garment</button>
-            <button id="g-reverse" class="secondary">Find this garment on the web</button>
+            <button id="g-upload" class="secondary"><strong>Upload Garment</strong></button>
+            <button id="g-reverse" class="tertiary"><strong>Find this garment on the web</strong></button>
           </div>
         </div>
         <!-- Selfie -->
@@ -160,15 +161,15 @@ ui.innerHTML = `
           </div>
           <div class="controls">
             <input id="s-file" type="file" accept="image/*" style="display:none">
-            <button id="s-upload" class="secondary">Upload Selfie</button>
-            <button id="s-camera">Camera</button>
+            <button id="s-upload" class="secondary"><strong>Upload Selfie</strong></button>
+            <button id="s-camera"><strong>Camera</strong></button>
             <button id="s-snap" class="secondary" style="display:none">Snap</button>
           </div>
         </div>
 
         <div class="footer">
           <button id="try" style="flex:1">Try Me</button>
-          <button id="clear" class="secondary">Clear</button>
+          <button id="clear" class="secondary"><strong>Clear</strong></button>
         </div>
 
         <div class="status" id="status"></div>
@@ -367,7 +368,6 @@ function enableVerticalDrag(el) {
 }
 
 enableVerticalDrag(shadow.getElementById('vton-tab'));
-enableVerticalDrag(shadow.getElementById('vton-header'));
 
 // select boxes
 ['g','s'].forEach(k => {

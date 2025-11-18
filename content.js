@@ -56,15 +56,6 @@ style.textContent = `
     width: 680px;
   }
 
-  .header {
-    padding: 8px 10px;
-    background: #000000ff; color: #eee;
-    border-bottom:1px solid #eee;
-    display:flex; align-items:center; justify-content: space-between;
-    font-weight:600; cursor: ns-resize;               /* vertical drag */
-    border-radius: 8px 0 0 0;
-  }
-
   .body {
     padding: 12px;
     display: flex;
@@ -144,9 +135,6 @@ shadow.appendChild(style);
 const ui = document.createElement('div');
 ui.innerHTML = `
   <div class="panel" id="vton-panel">
-    <div class="header" id="vton-header">
-      <span>TryMe Virtual Try-On</span>
-    </div>
     <div class="body">
       <div class="body-main">
         <!-- Garment -->

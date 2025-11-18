@@ -5,15 +5,15 @@ The extension communicates with a lightweight Node/Express backend, which forwar
 
 <br>
 
-![Platform](https://img.shields.io/badge/Platform-Chrome_Extension-4285F4?style=for-the-badge&logo=google-chrome&logoColor=white)
-![Language](https://img.shields.io/badge/Language-JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black)
-![UI](https://img.shields.io/badge/UI-HTML%20%2F%20CSS-E34F26?style=for-the-badge&logo=html5&logoColor=white)
+![Chrome Extension](https://img.shields.io/badge/Platform-Chrome_Extension-4285F4?logo=google-chrome&logoColor=white)
+![JavaScript](https://img.shields.io/badge/Language-JavaScript-F7DF1E?logo=javascript&logoColor=black)
+![HTML/CSS](https://img.shields.io/badge/UI-HTML%20%2F%20CSS-E34F26?logo=html5&logoColor=white)
 
-![Backend](https://img.shields.io/badge/Backend-Node.js-339933?style=for-the-badge&logo=nodedotjs&logoColor=white)
-![Hosted_On](https://img.shields.io/badge/Hosted_on-Render-46E3B7?style=for-the-badge&logo=render&logoColor=white)
+![Node.js](https://img.shields.io/badge/Backend-Node.js-339933?logo=nodedotjs&logoColor=white)
+![Render](https://img.shields.io/badge/Hosted_on-Render-46E3B7?logo=render&logoColor=white)
 
-![Model](https://img.shields.io/badge/AI_Model-IDM--VTON-FF6F61?style=for-the-badge&logo=huggingface&logoColor=white)
-![API](https://img.shields.io/badge/API-HuggingFace_Space-FFD21E?style=for-the-badge&logo=huggingface&logoColor=black)
+![IDM-VTON](https://img.shields.io/badge/AI_Model-IDM--VTON-FF6F61?logo=huggingface&logoColor=white)
+![HuggingFace](https://img.shields.io/badge/API-HuggingFace_Space-FFD21E?logo=huggingface&logoColor=black)
 
 <br>
 

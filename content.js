@@ -1,5 +1,6 @@
 // content.js — Right-docked, vertical-only drag. Paste/Upload previews in-box with Delete.
 // Selfie camera appears in its paste box; Snap stops the camera.
+// Calls IDM-VTON Space via background.js and shows result on the right.
 
 //////////////////// Host & Shadow ////////////////////
 const host = document.createElement('div');
@@ -30,7 +31,7 @@ style.textContent = `
   }
 
   .panel {
-    width: 340px;
+    width: 360px;
     background: #fff; color: #111;
     border: 1px solid #ddd; border-right: none;       /* open to page on the left */
     border-radius: 8px 0 0 8px;
@@ -38,8 +39,14 @@ style.textContent = `
     font: 400 13px system-ui;
     display: none;
     position: relative;
+    transition: width .2s ease;
   }
   .panel.open { display: block; }
+
+  /* When we have a result, widen the panel */
+  .panel.has-result {
+    width: 680px;
+  }
 
   .header {
     padding: 8px 10px;
@@ -50,7 +57,28 @@ style.textContent = `
     border-radius: 8px 0 0 0;
   }
 
-  .body { padding: 12px; }
+  .body {
+    padding: 12px;
+    display: flex;
+    gap: 12px;
+  }
+
+  .body-main {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .body-result {
+    width: 280px;
+    display: none;
+    align-items: flex-start;
+    justify-content: center;
+  }
+
+  .panel.has-result .body-result {
+    display: flex;
+  }
+
   .row { margin-bottom: 12px; }
 
   .pasteBox {
@@ -86,7 +114,20 @@ style.textContent = `
   button.secondary { background:#fff; color:#111; }
 
   .footer { display:flex; gap:8px; }
-  .result { width:100%; border-radius:10px; margin-top:10px; display:none; }
+  .result {
+    width:100%;
+    border-radius:10px;
+    display:none;
+    max-height: 480px;
+    object-fit: contain;
+    border: 1px solid #eee;
+  }
+
+  .status {
+    font-size: 12px;
+    color: #666;
+    margin-top: 6px;
+  }
 `;
 shadow.appendChild(style);
 
@@ -99,41 +140,46 @@ ui.innerHTML = `
       <button id="close" class="secondary">Close</button>
     </div>
     <div class="body">
-      <!-- Garment -->
-      <div class="row">
-        <div id="g-box" class="pasteBox" tabindex="0" aria-label="Garment paste area">
-          <div class="pastePrompt"><strong>Paste Garment Image here</strong><small>(Click to select, then Ctrl/Cmd + V)</small></div>
-          <img id="g-preview" class="previewImg" alt="Garment Preview">
-          <button id="g-delete" class="deleteBtn" title="Remove image">Delete</button>
+      <div class="body-main">
+        <!-- Garment -->
+        <div class="row">
+          <div id="g-box" class="pasteBox" tabindex="0" aria-label="Garment paste area">
+            <div class="pastePrompt"><strong>Paste Garment Image here</strong><small>(Click to select, then Ctrl/Cmd + V)</small></div>
+            <img id="g-preview" class="previewImg" alt="Garment Preview">
+            <button id="g-delete" class="deleteBtn" title="Remove image">Delete</button>
+          </div>
+          <div class="controls">
+            <input id="g-file" type="file" accept="image/*" style="display:none">
+            <button id="g-upload" class="secondary">Upload Garment</button>
+          </div>
         </div>
-        <div class="controls">
-          <input id="g-file" type="file" accept="image/*" style="display:none">
-          <button id="g-upload" class="secondary">Upload Garment</button>
+
+        <!-- Selfie -->
+        <div class="row">
+          <div id="s-box" class="pasteBox" tabindex="0" aria-label="Selfie paste area">
+            <div class="pastePrompt"><strong>Paste Selfie here</strong><small>(Click to select, then Ctrl/Cmd + V)</small></div>
+            <video id="s-video" class="previewVideo" autoplay playsinline muted></video>
+            <img id="s-preview" class="previewImg" alt="Selfie Preview">
+            <button id="s-delete" class="deleteBtn" title="Remove">Delete</button>
+          </div>
+          <div class="controls">
+            <input id="s-file" type="file" accept="image/*" style="display:none">
+            <button id="s-upload" class="secondary">Upload Selfie</button>
+            <button id="s-camera">Camera</button>
+            <button id="s-snap" class="secondary" style="display:none">Snap</button>
+          </div>
         </div>
+
+        <div class="footer">
+          <button id="try" style="flex:1">Try On</button>
+          <button id="clear" class="secondary">Clear</button>
+        </div>
+        <div class="status" id="status"></div>
       </div>
 
-      <!-- Selfie -->
-      <div class="row">
-        <div id="s-box" class="pasteBox" tabindex="0" aria-label="Selfie paste area">
-          <div class="pastePrompt"><strong>Paste Selfie here</strong><small>(Click to select, then Ctrl/Cmd + V)</small></div>
-          <video id="s-video" class="previewVideo" autoplay playsinline muted></video>
-          <img id="s-preview" class="previewImg" alt="Selfie Preview">
-          <button id="s-delete" class="deleteBtn" title="Remove">Delete</button>
-        </div>
-        <div class="controls">
-          <input id="s-file" type="file" accept="image/*" style="display:none">
-          <button id="s-upload" class="secondary">Upload Selfie</button>
-          <button id="s-camera">Camera</button>
-          <button id="s-snap" class="secondary" style="display:none">Snap</button>
-        </div>
+      <div class="body-result">
+        <img id="result" class="result" alt="Result">
       </div>
-
-      <div class="footer">
-        <button id="try" style="flex:1">Try On (Mock)</button>
-        <button id="clear" class="secondary">Clear</button>
-      </div>
-
-      <img id="result" class="result" alt="Result">
     </div>
   </div>
 
@@ -144,6 +190,8 @@ shadow.appendChild(ui);
 //////////////////// State ////////////////////
 let activeBox = 'g';    // 'g' or 's'
 let mediaStream = null;
+let garmentBlob = null;
+let selfieBlob = null;
 
 //////////////////// Helpers ////////////////////
 function setActive(which) {
@@ -151,6 +199,10 @@ function setActive(which) {
   ['g-box','s-box'].forEach(id => shadow.getElementById(id).classList.remove('active'));
   shadow.getElementById(`${which}-box`).classList.add('active');
   shadow.getElementById(`${which}-box`).focus();
+}
+
+function setStatus(msg) {
+  shadow.getElementById('status').textContent = msg || '';
 }
 
 function showImageInBox(kind, blobOrFileUrl) {
@@ -180,12 +232,17 @@ function resetBox(kind) {
   del.style.display = 'none';
   prompt.style.display = 'block';
   box.classList.remove('active');
+
+  if (kind === 'g') garmentBlob = null;
+  if (kind === 's') selfieBlob = null;
 }
 
 function fileToPreview(file, kind) {
   if (!file || !file.type.startsWith('image/')) return;
   const url = URL.createObjectURL(file);
   showImageInBox(kind, url);
+  if (kind === 'g') garmentBlob = file;
+  if (kind === 's') selfieBlob = file;
 }
 
 function stopCamera() {
@@ -222,9 +279,11 @@ function snapSelfie() {
   const ctx = c.getContext('2d');
   ctx.drawImage(vid, 0, 0, c.width, c.height);
   c.toBlob(b => {
+    if (!b) return;
     const url = URL.createObjectURL(b);
+    selfieBlob = b;
     showImageInBox('s', url);
-    stopCamera();                   // stop camera on Snap (as requested)
+    stopCamera();                   // stop camera on Snap
   }, 'image/jpeg', 0.92);
 }
 
@@ -233,6 +292,15 @@ function handlePaste(e) {
   if (!item) return;
   const file = item.getAsFile();
   fileToPreview(file, activeBox);
+}
+
+function blobToDataUrl(blob) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onerror = reject;
+    reader.onloadend = () => resolve(reader.result);
+    reader.readAsDataURL(blob);
+  });
 }
 
 //////////////////// Wire UI ////////////////////
@@ -304,24 +372,74 @@ shadow.getElementById('s-delete').addEventListener('click', () => resetBox('s'))
 shadow.getElementById('s-camera').addEventListener('click', () => { setActive('s'); startCameraInSelfieBox(); });
 shadow.getElementById('s-snap').addEventListener('click', snapSelfie);
 
-// Clear & Mock Try-On
+// Clear & Try-On
+const resultImg = shadow.getElementById('result');
+
 shadow.getElementById('clear').addEventListener('click', () => {
   resetBox('g'); resetBox('s');
-  shadow.getElementById('result').style.display = 'none';
+  resultImg.style.display = 'none';
+  resultImg.removeAttribute('src');
+  panel.classList.remove('has-result');
+  setStatus('');
 });
+
 shadow.getElementById('try').addEventListener('click', async () => {
-  const g = shadow.getElementById('g-preview').src;
-  const s = shadow.getElementById('s-preview').src || shadow.getElementById('s-video').srcObject;
-  if (!g || !s) { alert('Please add both a garment image and a selfie.'); return; }
+  if (!garmentBlob || !selfieBlob) {
+    alert('Please add both a garment image and a selfie.');
+    return;
+  }
 
   const btn = shadow.getElementById('try');
-  const oldTxt = btn.textContent; btn.textContent = 'Processing…'; btn.disabled = true;
-  await new Promise(r => setTimeout(r, 700));
-  btn.textContent = oldTxt; btn.disabled = false;
+  const oldTxt = btn.textContent;
+  btn.textContent = 'Processing…';
+  btn.disabled = true;
+  setStatus('Sending images to IDM-VTON… this can take a little while.');
 
-  const result = shadow.getElementById('result');
-  result.src = chrome.runtime.getURL('assets/mock_result.jpg');
-  result.style.display = 'block';
+  try {
+    const [garmentDataUrl, selfieDataUrl] = await Promise.all([
+      blobToDataUrl(garmentBlob),
+      blobToDataUrl(selfieBlob)
+    ]);
+
+    // Wrap sendMessage in a Promise
+    const response = await new Promise((resolve, reject) => {
+      chrome.runtime.sendMessage(
+        {
+          type: 'TRY_ON_REQUEST',
+          garmentDataUrl,
+          selfieDataUrl
+        },
+        (res) => {
+          if (chrome.runtime.lastError) {
+            reject(chrome.runtime.lastError);
+          } else {
+            resolve(res);
+          }
+        }
+      );
+    });
+
+    if (!response || !response.ok) {
+      throw new Error(response?.error || 'Unknown error from backend');
+    }
+
+    // Show the API result on the right without clearing the inputs
+    resultImg.src = response.result;
+    resultImg.style.display = 'block';
+    panel.classList.add('has-result');
+    setStatus('Done! You can adjust inputs and try again.');
+  } catch (err) {
+    console.error(err);
+    alert('There was a problem running the virtual try-on. Falling back to mock image.');
+    // fallback to mock for demo
+    resultImg.src = chrome.runtime.getURL('assets/mock_result.png');
+    resultImg.style.display = 'block';
+    panel.classList.add('has-result');
+    setStatus('Showing mock result due to an error from the backend.');
+  } finally {
+    btn.textContent = oldTxt;
+    btn.disabled = false;
+  }
 });
 
 // default active target

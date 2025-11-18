@@ -1,26 +1,47 @@
-// background.js — will call Hugging Face IDM-VTON
+// background.js 
 
-const HF_ENDPOINT = '';
+const TRYON_ENDPOINT = "https://tryme-backend-fapp.onrender.com/tryon";
 
-const HF_TOKEN = ''; 
 
 chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
-  if (msg.type === 'TRY_ON_REQUEST') {
-    // msg will contain garment + selfie data 
+  if (msg.type === "TRY_ON_REQUEST") {
     handleTryOn(msg)
-      .then(resultUrlOrData => sendResponse({ ok: true, result: resultUrlOrData }))
-      .catch(err => {
-        console.error('IDM-VTON error:', err);
+      .then((resultDataUrl) => {
+        sendResponse({ ok: true, result: resultDataUrl });
+      })
+      .catch((err) => {
+        console.error("TryOn error:", err);
         sendResponse({ ok: false, error: String(err) });
       });
-    return true; // keep channel open for async response
+
+    // Tell Chrome this is async
+    return true;
   }
 });
 
-// TODO: implement the Hugging Face call here.
-async function handleTryOn({ garmentImage, selfieImage }) {
-  // Build request body
-  // const res = await fetch(HF_ENDPOINT, { ... });
-  // return URL or data to be shown in <img id="result"> in content.js.
-  return null;
+// msg = { selfieDataUrl, garmentDataUrl }
+async function handleTryOn({ selfieDataUrl, garmentDataUrl }) {
+  const res = await fetch(TRYON_ENDPOINT, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      selfieDataUrl,
+      garmentDataUrl
+    })
+  });
+
+  if (!res.ok) {
+    throw new Error(`HTTP ${res.status} from backend`);
+  }
+
+  const json = await res.json();
+
+  if (!json.ok || !json.result) {
+    throw new Error(json.error || "Backend returned no result");
+  }
+
+  // This should be a data:image/...;base64,... string from your server
+  return json.result;
 }

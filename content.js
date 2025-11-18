@@ -159,9 +159,9 @@ ui.innerHTML = `
           <div class="controls">
             <input id="g-file" type="file" accept="image/*" style="display:none">
             <button id="g-upload" class="secondary">Upload Garment</button>
+            <button id="g-reverse" class="secondary">Find this garment on the web</button>
           </div>
         </div>
-
         <!-- Selfie -->
         <div class="row">
           <div id="s-box" class="pasteBox" tabindex="0" aria-label="Selfie paste area">
@@ -400,6 +400,54 @@ window.addEventListener('paste', handlePaste);
 shadow.getElementById('g-upload').onclick = () => { setActive('g'); shadow.getElementById('g-file').click(); };
 shadow.getElementById('s-upload').onclick = () => { setActive('s'); shadow.getElementById('s-file').click(); };
 shadow.getElementById('g-file').addEventListener('change', (e) => fileToPreview(e.target.files[0], 'g'));
+
+// Reverse image search for garment
+const gReverseBtn = shadow.getElementById('g-reverse');
+
+gReverseBtn.addEventListener('click', async () => {
+  if (!garmentBlob) {
+    alert('Please paste or upload a garment image first.');
+    return;
+  }
+
+  try {
+    gReverseBtn.disabled = true;
+    const originalText = gReverseBtn.textContent;
+    gReverseBtn.textContent = 'Searching…';
+
+    const garmentDataUrl = await blobToDataUrl(garmentBlob);
+
+    const response = await new Promise((resolve, reject) => {
+      chrome.runtime.sendMessage(
+        {
+          type: 'REVERSE_SEARCH_REQUEST',
+          garmentDataUrl,
+        },
+        (res) => {
+          if (chrome.runtime.lastError) {
+            reject(chrome.runtime.lastError);
+          } else {
+            resolve(res);
+          }
+        }
+      );
+    });
+
+    if (!response || !response.ok) {
+      throw new Error(response?.error || 'Unknown error from backend');
+    }
+
+    // Open Google reverse image search in a new tab
+    window.open(response.googleUrl, '_blank');
+  } catch (err) {
+    console.error(err);
+    alert('Could not start reverse image search. Please try again.');
+  } finally {
+    gReverseBtn.disabled = false;
+    gReverseBtn.textContent = 'Find this garment on the web';
+  }
+});
+
 shadow.getElementById('s-file').addEventListener('change', (e) => fileToPreview(e.target.files[0], 's'));
 
 // Deletes

@@ -25,7 +25,12 @@
   "web_accessible_resources": [
   {
     "resources": [
-      "assets/mock_result.png"
+      "assets/mock_result.png",
+      "assets/icon16.png",
+      "assets/icon48.png",
+      "assets/icon128.png",
+      "assets/tab-icon.png",        
+      "assets/header-logo.png"
     ],
     "matches": ["<all_urls>"]
   }

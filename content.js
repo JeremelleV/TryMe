@@ -21,15 +21,23 @@ style.textContent = `
 
   /* Right-side tab that sticks out to the left */
   .tab {
-    position: absolute; left: -40px; top: 0;
-    width: 40px; height: 120px;
-    background: #111; color: #fff;
-    border-radius: 8px 0 0 8px;
+    position: absolute; left: -80px; top: 30px;
+    width: 80px; height: 80px;
+    background: #38b6ff;
+    border-radius: 12px 0 0 12px;
     display: flex; align-items: center; justify-content: center;
-    font: 600 12px system-ui;
     cursor: ns-resize; user-select: none;
   }
 
+  /* Ensure the tab icon fills the box nicely */
+  .tab img#tab-icon {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    display: block;
+    border-radius: 12px 0 0 12px;
+  }
+  
   .panel {
     width: 360px;
     background: #fff; color: #111;
@@ -50,7 +58,7 @@ style.textContent = `
 
   .header {
     padding: 8px 10px;
-    background:#f6f7f9;
+    background: #000000ff; color: #eee;
     border-bottom:1px solid #eee;
     display:flex; align-items:center; justify-content: space-between;
     font-weight:600; cursor: ns-resize;               /* vertical drag */
@@ -83,7 +91,7 @@ style.textContent = `
 
   .pasteBox {
     position: relative;
-    border: 2px dashed #bbb; border-radius: 10px;
+    border: 2px dashed #558bc9ff; border-radius: 10px;
     padding: 12px; min-height: 120px;
     display:flex; align-items:center; justify-content:center;
     text-align:center; color:#555; background:#fafafa;
@@ -92,7 +100,7 @@ style.textContent = `
   }
   .pasteBox.active {
     border-color:#111; background:#fff;
-    box-shadow: 0 0 0 3px rgba(0,0,0,.08) inset;
+    box-shadow: 0 0 0 3px rgba(0, 60, 170, 0.22) inset;
   }
   .pastePrompt { pointer-events:none; }
   .pastePrompt small { color:#777; display:block; margin-top: 2px; }
@@ -114,6 +122,7 @@ style.textContent = `
   button.secondary { background:#fff; color:#111; }
 
   .footer { display:flex; gap:8px; }
+
   .result {
     width:100%;
     border-radius:10px;
@@ -136,8 +145,7 @@ const ui = document.createElement('div');
 ui.innerHTML = `
   <div class="panel" id="vton-panel">
     <div class="header" id="vton-header">
-      <span>Virtual Try-On</span>
-      <button id="close" class="secondary">Close</button>
+      <span>TryMe Virtual Try-On</span>
     </div>
     <div class="body">
       <div class="body-main">
@@ -171,9 +179,10 @@ ui.innerHTML = `
         </div>
 
         <div class="footer">
-          <button id="try" style="flex:1">Try On</button>
+          <button id="try" style="flex:1">Try Me</button>
           <button id="clear" class="secondary">Clear</button>
         </div>
+
         <div class="status" id="status"></div>
       </div>
 
@@ -183,9 +192,18 @@ ui.innerHTML = `
     </div>
   </div>
 
-  <div class="tab" id="vton-tab" title="Drag up/down • Click to open">TRY</div>
+  <div class="tab" id="vton-tab" title="Drag up/down • Click to open">
+    <img id="tab-icon" alt="TryMe tab icon">
+  </div>
+
 `;
 shadow.appendChild(ui);
+
+// Set tab + header + try button images after UI is in the shadow DOM
+const tabIconEl = shadow.getElementById('tab-icon');
+if (tabIconEl) {
+  tabIconEl.src = chrome.runtime.getURL('assets/tab-icon.png');
+}
 
 //////////////////// State ////////////////////
 let activeBox = 'g';    // 'g' or 's'
@@ -315,10 +333,10 @@ shadow.getElementById('vton-tab').addEventListener('click', () => {
   panel.classList.toggle('open');
   if (!panel.classList.contains('open')) stopCamera();
 });
-shadow.getElementById('close').addEventListener('click', () => {
-  panel.classList.remove('open');
-  stopCamera();
-});
+//shadow.getElementById('close').addEventListener('click', () => {
+//  panel.classList.remove('open');
+//  stopCamera();
+//});
 
 // vertical-only drag for tab and header (host stays pinned to RIGHT)
 function enableVerticalDrag(el) {

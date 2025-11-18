@@ -1,0 +1,24 @@
+{
+  "manifest_version": 3,
+  "name": "TryMe - Virtual Try-On",
+  "version": "0.1.0",
+  "description": "Chrome extension for AI-powered virtual try-on using IDM-VTON on Hugging Face.",
+  "permissions": [
+    "scripting",
+    "activeTab"
+  ],
+  "host_permissions": [
+    "https://yisol-idm-vton.hf.space/*",
+    "https://huggingface.co/*"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"],
+      "run_at": "document_idle"
+    }
+  ]
+}

@@ -12,8 +12,16 @@
 
 ---
 
-A browser-based virtual try-on tool that lets users overlay garment images onto a selfie directly while shopping online.  
-The extension communicates with a lightweight Node/Express backend, which forwards images to the **IDM-VTON** Hugging Face Space for AI-powered try-on generation.
+## Overview
+
+**TryMe** is a Chrome extension that lets users virtually try on clothing directly on any shopping website.  
+Powered by the **IDM-VTON** deep learning model (via Hugging Face), the extension allows users to:
+
+- Paste or upload a garment image  
+- Paste/upload/snap a selfie  
+- Generate a virtual try-on preview  
+- Reverse-search the garment on Google Lens  
+- Use drag-to-move UI and live camera integration  
 
 ---
 
@@ -30,20 +38,66 @@ Devpost: **[Devpost Page Here](https://devpost.com/software/emergrade)**
 
 ---
 
-## Model Credit — yisol/IDM-VTON
+## Installation (Developer Mode)
 
-All virtual try-on results are generated using the excellent open-source model licensed under the Creative Commons Attribution-NonCommercial-ShareAlike 4.0 License:
+1. Clone the repo 
+```bash
+git clone https://github.com/JeremelleV/TryMe
+```
+2. Open Chrome → Extensions → enable Developer Mode
+3. Click "Load unpacked"
+4. Select this repository folder
+5. The TryMe panel will appear on the right side of any webpage
 
-### **IDM-VTON on Hugging Face**  
-🔗 https://huggingface.co/spaces/yisol/IDM-VTON  
+---
 
-### **GitHub Repository**  
-🔗 https://github.com/yisol/IDM-VTON  
+## How It Works
 
-This extension does **not** modify or distribute model weights.  
-All inference calls go directly through the publicly available **Hugging Face Space API** using the `@gradio/client` library.
+### Frontend (Chrome Extension)
+- Shadow DOM UI
+- Paste, drag, upload, camera capture
+- Temporary image display
+- Reverse image search using Google Lens
+- Sends data URLs to backend via Chrome messaging
 
-If you use or extend this project, please credit **yisol et al.** for their work.
+### Backend (Render)
+- Receives garment and selfie images
+- Sends both to IDM-VTON on Hugging Face
+- Returns generated virtual try-on image
+- Hosts temporary garment images for Google Lens search
+- Returns a mock preview when free-tier HF quota is exhausted
+
+---
+
+## Hugging Face Token & Quota Caveats
+
+The extension relies on the Hugging Face ZeroGPU free tier.
+
+Important notes:
+- Daily GPU minutes are limited
+- IDM-VTON may still treat API calls as anonymous even with a token
+- When quota is exceeded:
+  - Backend returns a mock result
+- Quota resets every 24 hours
+- Best workaround: fork IDM-VTON into your own HF account
+
+---
+
+## Google Reverse Image Search
+
+The extension supports garment reverse-search via Google Lens.
+
+Notes:
+- Implemented using "lens.google.com/uploadbyurl?url=<image>"
+- Feature works as of version 1.0 (2025-11)
+- Google may change Lens APIs at any time
+- Uploaded images are temporarily hosted under /public/reverse/ on the backend
+
+---
+
+## Gallery
+
+To Be Filled-
 
 ---
 
@@ -67,3 +121,21 @@ This means:
 - During cold starts, the extension may temporarily fall back to the mock image
 
 Once warm, results are generally fast.
+
+---
+
+## Model Credit — yisol/IDM-VTON
+
+All virtual try-on results are generated using the excellent open-source model licensed under the Creative Commons Attribution-NonCommercial-ShareAlike 4.0 License:
+
+### **IDM-VTON on Hugging Face**  
+🔗 https://huggingface.co/spaces/yisol/IDM-VTON  
+
+### **GitHub Repository**  
+🔗 https://github.com/yisol/IDM-VTON  
+
+This extension does **not** modify or distribute model weights.  
+All inference calls go directly through the publicly available **Hugging Face Space API** using the `@gradio/client` library.
+
+If you use or extend this project, please credit **yisol et al.** for their work.
+

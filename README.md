@@ -25,6 +25,17 @@ Powered by the **IDM-VTON** deep learning model (via Hugging Face), the extensio
 
 ---
 
+## Gallery
+
+<div style="overflow-x: auto; white-space: nowrap; padding-bottom: 10px;">
+  <img src="assets/vton-ezgif-20.gif" width="450">
+  <img src="assets/camera.png" width="200">
+  <img src="assets/rvs-sch-exgif-20.gif" width="300">
+  
+</div>
+
+---
+
 ## Inspiration
 
 TryMe was originally inspired by my team's **NatHacks 2025** hackathon project.  
@@ -78,6 +89,7 @@ Important notes:
 - IDM-VTON may still treat API calls as anonymous even with a token
 - When quota is exceeded:
   - Backend returns a mock result
+  - <img src="assets/mock_result.png" width="200">
 - Quota resets every 24 hours
 - Best workaround: fork IDM-VTON into your own HF account
 
@@ -92,12 +104,6 @@ Notes:
 - Feature works as of version 1.0 (2025-11)
 - Google may change Lens APIs at any time
 - Uploaded images are temporarily hosted under /public/reverse/ on the backend
-
----
-
-## Gallery
-
-To Be Filled-
 
 ---
 

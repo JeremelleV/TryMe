@@ -363,7 +363,7 @@ function enableVerticalDrag(el) {
     dragging = true;
     moved = false;
     startY = e.clientY;
-    startTop = host.getBoundingClientRect().top + window.scrollY;
+    startTop = host.getBoundingClientRect().top;
     e.preventDefault();
   };
 

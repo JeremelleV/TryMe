@@ -28,10 +28,10 @@ Powered by the **IDM-VTON** deep learning model (via Hugging Face), the extensio
 ## Gallery
 
 <div style="overflow-x: auto; white-space: nowrap; padding-bottom: 10px;">
-  <img src="assets/vton-ezgif-20.gif" width="450">
-  <img src="assets/camera.png" width="200">
+  <img src="assets/vton-ezgif-20.gif" width="470">
   <img src="assets/rvs-sch-exgif-20.gif" width="300">
-  
+  <img src="assets/mock_result.png" width="180">
+  <img src="assets/camera.png" width="200">
 </div>
 
 ---
@@ -88,8 +88,7 @@ Important notes:
 - Daily GPU minutes are limited
 - IDM-VTON may still treat API calls as anonymous even with a token
 - When quota is exceeded:
-  - Backend returns a mock result
-  - <img src="assets/mock_result.png" width="200">
+  - Backend returns a mock result with token notice
 - Quota resets every 24 hours
 - Best workaround: fork IDM-VTON into your own HF account
 

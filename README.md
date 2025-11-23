@@ -45,6 +45,8 @@ Check out the original project:
 
 Live website: **[Emergrade on Render](https://emergrade-a0wx.onrender.com)** 
 
+GitHub repo: **[Emergrade GitHub Repo](https://github.com/JeremelleV/Emergrade)**
+
 Devpost: **[Devpost Page Here](https://devpost.com/software/emergrade)**
 
 ---
